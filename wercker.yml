@@ -1,0 +1,50 @@
+
+box: ubuntu:16.04
+
+build:
+   steps:
+    - script:
+         code: |
+            touch "$WERCKER_OUTPUT_DIR/dummy"
+
+deploy:
+   steps:
+    - script:
+         code: |
+            echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/50amarente
+            apt-get update
+            apt-get dist-upgrade -y
+            apt-get install -y sudo tzdata locales locales-all
+            update-locale --reset LANG=C.UTF-8
+            rm -rf /etc/localtime && ln -s /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+            dpkg-reconfigure --frontend noninteractive tzdata
+            rm -rf /etc/skel/{*,.??*}
+            mkdir -m 0700 /etc/skel/.ssh
+            addgroup --gid 1000 ubuntu
+            useradd --uid 1000 --gid 1000 --create-home --shell /bin/bash --no-log-init --password '*' ubuntu
+            adduser ubuntu sudo
+            adduser ubuntu adm
+            echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/ubuntu
+            /usr/bin/sudo -u ubuntu sudo true
+    - script:
+         code: |
+            cat > /kick <<'^Z'
+            #!/bin/sh
+            sudo -Hu ubuntu /start "$@"
+            ^Z
+            chmod +x /kick
+            cat > /start <<'^Z'
+            #!/bin/bash
+            cd /arena
+            "$@"
+            ^Z
+            chmod +x /start
+    - script:
+         code: |
+            apt-get clean
+            rm -rf /var/lib/apt/lists/*
+            rm -rf /pipeline
+    - internal/docker-push:
+         repository: norioxkimura/amarante
+         entrypoint: /kick
+
