@@ -41,6 +41,13 @@ deploy:
             chmod +x /start
     - script:
          code: |
+            apt-get install -y                                              \
+                git                                                         \
+                python-pip
+            python -m pip install -U pip setuptools wheel
+            pip install -U cookiecutter
+    - script:
+         code: |
             apt-get clean
             rm -rf /var/lib/apt/lists/*
             rm -rf /pipeline
