@@ -52,8 +52,8 @@ deploy:
             rm -rf /var/lib/apt/lists/*
             rm -rf /pipeline
     - internal/docker-push:
-         username: $USERNAME
-         password: $PASSWORD
+         username: $DOCKERHUB_USERNAME
+         password: $DOCKERHUB_PASSWORD
          repository: norioxkimura/amarante
          entrypoint: /kick
 
