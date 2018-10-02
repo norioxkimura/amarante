@@ -43,9 +43,14 @@ deploy:
          code: |
             apt-get install -y                                              \
                 git                                                         \
-                python-pip
+                python-pip                                                  \
+                python3-pip
+            /usr/bin/sudo -Hu ubuntu git config --global user.email "$EMAIL"
+            /usr/bin/sudo -Hu ubuntu git config --global user.name "$FULLNAME"
             python -m pip install -U pip setuptools wheel
-            pip install -U cookiecutter
+            python3 -m pip install -U pip setuptools wheel
+            pip2 install -U cookiecutter
+            pip3 install -U pyscaffold
     - script:
          code: |
             apt-get clean
