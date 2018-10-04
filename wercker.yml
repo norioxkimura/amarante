@@ -44,13 +44,18 @@ deploy:
             apt-get install -y                                              \
                 git                                                         \
                 python-pip                                                  \
-                python3-pip
+                python3-pip                                                 \
+                build-essential                                             \
+                ruby ruby-dev
             /usr/bin/sudo -Hu ubuntu git config --global user.email "$EMAIL"
             /usr/bin/sudo -Hu ubuntu git config --global user.name "$FULLNAME"
             python -m pip install -U pip setuptools wheel
             python3 -m pip install -U pip setuptools wheel
             pip2 install -U cookiecutter
             pip3 install -U pyscaffold
+            gem install travis -v 1.8.9 --no-rdoc --no-ri
+            apt-get purge -y build-essential ruby-dev
+            apt-get autoremove -y
     - script:
          code: |
             apt-get clean
